@@ -281,7 +281,7 @@ test('manual model saves do not migrate stored credentials between providers or 
   expect((await savedModel(page)).baseUrl).toBe(initialModel.baseUrl);
   await save.click();
   await expect(unconfigured).toBeVisible();
-  expect((await savedModel(page)).baseUrl).toBe(nextAddress);
+  await expect.poll(async () => (await savedModel(page)).baseUrl).toBe(nextAddress);
   expect(await credentialCalls(page, 'model.credential.set')).toEqual([]);
   await expect(panel.getByRole('button', { name: '删除密钥', exact: true })).toBeDisabled();
   await panel.getByLabel('模型 API 密钥', { exact: true }).fill('synthetic-second-credential');
