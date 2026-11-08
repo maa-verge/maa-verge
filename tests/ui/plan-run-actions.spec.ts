@@ -52,9 +52,9 @@ test('single-device card prevents repeat start and stop requests and restores st
   await openTasks(page);
   await row(page).getByRole('button', { name: '开始执行', exact: true }).click();
   await expect(row(page).getByRole('button', { name: '正在启动…', exact: true })).toBeDisabled();
-  expect(await page.evaluate(() => (window as ActionWindow).startRequests)).toEqual([
-    'mock-device-1',
-  ]);
+  await expect
+    .poll(() => page.evaluate(() => (window as ActionWindow).startRequests))
+    .toEqual(['mock-device-1']);
   await page.evaluate(() => (window as ActionWindow).releaseStart());
   await expect(row(page).getByRole('button', { name: '查看执行', exact: true })).toBeVisible();
   await expect(row(page).getByRole('button', { name: '开始执行', exact: true })).toHaveCount(0);
@@ -133,7 +133,9 @@ test('additional launch excludes running and offline targets and monitor shows e
   await (await additional(page)).click();
   await dialog(page).getByRole('button', { name: '在 1 台设备运行', exact: true }).click();
   await expect(dialog(page)).toBeHidden();
-  expect(await page.evaluate(() => (window as ActionWindow).startRequests)).toEqual([ids.second]);
+  await expect
+    .poll(() => page.evaluate(() => (window as ActionWindow).startRequests))
+    .toEqual([ids.second]);
   await expect(
     row(page).getByRole('button', { name: '停止全部任务表每日长草计划', exact: true }),
   ).toHaveText('停止全部');
